@@ -67,9 +67,13 @@ class SarvamClient:
                     'model': 'saaras:v3'
                 }
                 
+                # For file uploads, don't include Content-Type header
+                # requests will automatically set it to multipart/form-data
                 headers = {
                     "api-subscription-key": self.api_key
                 }
+                
+                print(f"[DEBUG] Transcribing with key: {self.api_key[:20]}... | Language: {language}")
                 
                 response = requests.post(
                     f"{self.api_base_url}/speech-to-text",
