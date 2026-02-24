@@ -1,0 +1,399 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+    max-height: 800px;
+}
+
+body.dark-mode .container {
+    background: #2a2a3e;
+    color: #e0e0e0;
+}
+
+.header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+body.dark-mode .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.header h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.header p {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.header .subtitle {
+    font-size: 11px;
+    opacity: 0.8;
+    margin-top: 3px;
+    font-style: italic;
+}
+
+.language-selector {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+body.dark-mode .language-selector {
+    border-bottom-color: #444;
+}
+
+.language-selector label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.language-selector select {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+body.dark-mode .language-selector select {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+.chatbox {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: #f9f9f9;
+}
+
+body.dark-mode .chatbox {
+    background: #1a1a2e;
+}
+
+.messages {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    max-width: 85%;
+    word-wrap: break-word;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message {
+    align-self: flex-end;
+    background: #667eea;
+    color: white;
+    border-radius: 18px 18px 4px 18px;
+}
+
+.bot-message {
+    align-self: flex-start;
+    background: #e0e0e0;
+    color: #333;
+    border-radius: 18px 18px 18px 4px;
+}
+
+body.dark-mode .bot-message {
+    background: #3a3a4e;
+    color: #e0e0e0;
+}
+
+.message-time {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+.typing-indicator {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.typing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #667eea;
+    animation: typing 1.4s infinite;
+}
+
+.typing-dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+.input-container {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    background: white;
+}
+
+body.dark-mode .input-container {
+    border-top-color: #444;
+    background: #2a2a3e;
+}
+
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#userInput {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+body.dark-mode #userInput {
+    background: #3a3a4e;
+    border-color: #555;
+    color: #e0e0e0;
+}
+
+#userInput:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-send {
+    background: #667eea;
+    color: white;
+}
+
+.btn-send:hover {
+    background: #5568d3;
+}
+
+.btn-voice {
+    background: #4caf50;
+    color: white;
+    flex: 1;
+}
+
+.btn-voice:hover {
+    background: #45a049;
+}
+
+.btn-stop {
+    background: #f44336;
+    color: white;
+    flex: 1;
+}
+
+.btn-stop:hover {
+    background: #da190b;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.voice-input {
+    display: flex;
+    gap: 10px;
+}
+
+.recording-status {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 12px;
+    display: none;
+}
+
+.recording-status.active {
+    display: block;
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+}
+
+body.dark-mode .recording-status.active {
+    background: #3a3a4e;
+    color: #ffc107;
+    border-color: #555;
+}
+
+.settings {
+    padding: 10px 15px;
+    border-top: 1px solid #eee;
+}
+
+body.dark-mode .settings {
+    border-top-color: #444;
+}
+
+.settings summary {
+    cursor: pointer;
+    font-weight: 500;
+    padding: 8px;
+    user-select: none;
+    font-size: 14px;
+}
+
+.settings summary:hover {
+    color: #667eea;
+}
+
+.settings-content {
+    padding: 10px 0 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.settings-content label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.settings-content input[type="checkbox"] {
+    cursor: pointer;
+}
+
+/* Scrollbar styling */
+.chatbox::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chatbox::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+body.dark-mode .chatbox::-webkit-scrollbar-track {
+    background: #1a1a2e;
+}
+
+.chatbox::-webkit-scrollbar-thumb {
+    background: #667eea;
+    border-radius: 4px;
+}
+
+.chatbox::-webkit-scrollbar-thumb:hover {
+    background: #5568d3;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    .container {
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+    }
+
+    .message {
+        max-width: 90%;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+}
