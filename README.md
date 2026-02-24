@@ -59,7 +59,7 @@ pip install -r requirements.txt
 
 The `.env` file already contains your API key:
 ```
-SARVAM_API_KEY=sk_n8ou9kh3_LLjokiDcynMaVM7F2R8Pk2Es
+SARVAM_API_KEY=your_api_key_here
 SARVAM_API_URL=https://api.sarvam.ai/api/v1
 ```
 
