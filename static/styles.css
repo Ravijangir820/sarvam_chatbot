@@ -100,8 +100,10 @@ body.dark-mode .language-selector select {
 .chatbox {
     flex: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding: 20px;
     background: #f9f9f9;
+    scroll-behavior: smooth;
 }
 
 body.dark-mode .chatbox {
@@ -156,6 +158,63 @@ body.dark-mode .bot-message {
     font-size: 11px;
     opacity: 0.7;
     margin-top: 4px;
+}
+
+.audio-controls {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+body.dark-mode .audio-controls {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.audio-btn {
+    padding: 6px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+body.dark-mode .audio-btn {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(102, 126, 234, 0.2);
+}
+
+.audio-btn:hover {
+    background: rgba(102, 126, 234, 0.2);
+    border-color: #667eea;
+    transform: translateY(-1px);
+}
+
+body.dark-mode .audio-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+}
+
+.audio-btn:active {
+    transform: translateY(0);
+}
+
+.audio-status {
+    font-size: 11px;
+    color: #667eea;
+    font-weight: 500;
+    margin-left: 5px;
+}
+
+body.dark-mode .audio-status {
+    color: #ffc107;
 }
 
 .typing-indicator {

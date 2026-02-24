@@ -2,6 +2,8 @@
 let mediaRecorder;
 let audioChunks = [];
 let isRecording = false;
+let currentUtterance = null;
+let isAudioPlaying = false;
 
 // DOM Elements
 const userInput = document.getElementById('userInput');
@@ -204,12 +206,34 @@ function addMessageToUI(message, sender) {
         minute: '2-digit' 
     });
     
+    let messageContent = escapeHtml(message);
+    let audioControls = '';
+    
+    // Add audio controls for bot messages
+    if (sender === 'bot') {
+        const messageId = 'msg-' + Date.now();
+        audioControls = `
+            <div class="audio-controls">
+                <button class="audio-btn" onclick="playAudio('${messageId}', '${message.replace(/'/g, "\\'")}')" title="Play audio">🔊 Play</button>
+                <button class="audio-btn" onclick="pauseAudio()" id="pause-${messageId}" style="display:none;" title="Pause audio">⏸️ Pause</button>
+                <button class="audio-btn" onclick="stopAudio()" title="Stop audio">⏹️ Stop</button>
+                <span class="audio-status" id="status-${messageId}"></span>
+            </div>
+        `;
+    }
+    
     messageDiv.innerHTML = `
-        ${escapeHtml(message)}
+        ${messageContent}
+        ${audioControls}
         <div class="message-time">${currentTime}</div>
     `;
     
     messagesDiv.appendChild(messageDiv);
+    
+    // Force scroll to bottom immediately after adding message
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Call scrollToBottom with multiple timing mechanisms
     scrollToBottom();
 }
 
@@ -226,6 +250,11 @@ function showTypingIndicator() {
     `;
     
     messagesDiv.appendChild(typingDiv);
+    
+    // Force scroll to bottom immediately
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Call scrollToBottom with fallbacks
     scrollToBottom();
 }
 
@@ -247,11 +276,35 @@ function showErrorMessage(message) {
     `;
     
     messagesDiv.appendChild(errorDiv);
+    
+    // Force scroll to bottom immediately
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Call scrollToBottom with fallbacks
     scrollToBottom();
 }
 
 function scrollToBottom() {
+    // Scroll to bottom of messages container
+    if (!messagesDiv) return;
+    
+    // Method 1: Direct scroll
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Method 2: Using requestAnimationFrame for better performance
+    requestAnimationFrame(() => {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+    
+    // Method 3: Backup with setTimeout
+    setTimeout(() => {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }, 0);
+    
+    // Method 4: Double-check after animation completes
+    setTimeout(() => {
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    }, 350); // Duration of slideIn animation
 }
 
 function showWelcomeMessage() {
@@ -259,6 +312,9 @@ function showWelcomeMessage() {
     welcomeDiv.className = 'message bot-message';
     welcomeDiv.style.background = '#e8f5e9';
     welcomeDiv.style.color = '#2e7d32';
+    const welcomeText = "Welcome to Sarvam AI Assistant! I'm here to help you learn about Sarvam AI's products and services: Speech to Text Saaras v3 with 23 language support, Text to Speech Bulbul v3 for natural voice generation, Sarvam M LLM for advanced multilingual AI, Samvaad Studio for conversational AI agents, and Vision for document intelligence. Try asking me about any of these features or Sarvam AI in general!";
+    
+    const messageId = 'welcome-' + Date.now();
     welcomeDiv.innerHTML = `
         <strong>👋 Welcome to Sarvam AI Assistant!</strong><br><br>
         I'm here to help you learn about Sarvam AI's products and services:<br><br>
@@ -268,10 +324,21 @@ function showWelcomeMessage() {
         ✅ <strong>Samvaad Studio</strong> - Conversational AI agents<br>
         ✅ <strong>Vision/Document Intelligence</strong> - Content extraction<br><br>
         Try asking me about any of these features or Sarvam AI in general!
+        <div class="audio-controls" style="margin-top:10px;">
+            <button class="audio-btn" onclick="playAudio('${messageId}', '${welcomeText}')" title="Play audio">🔊 Play</button>
+            <button class="audio-btn" onclick="pauseAudio()" id="pause-${messageId}" style="display:none;" title="Pause audio">⏸️ Pause</button>
+            <button class="audio-btn" onclick="stopAudio()" title="Stop audio">⏹️ Stop</button>
+            <span class="audio-status" id="status-${messageId}"></span>
+        </div>
         <div class="message-time">Assistant</div>
     `;
     
     messagesDiv.appendChild(welcomeDiv);
+    
+    // Force scroll to bottom immediately
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    
+    // Call scrollToBottom with fallbacks
     scrollToBottom();
 }
 
@@ -292,12 +359,132 @@ function getLanguageCode() {
     return languageMap[languageSelect.value] || 'en-IN';
 }
 
+function playAudio(messageId, message) {
+    try {
+        // Stop any currently playing audio
+        stopAudio();
+        
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = languageSelect.value === 'en' ? 'en-IN' : languageSelect.value + '-IN';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        
+        currentUtterance = utterance;
+        isAudioPlaying = true;
+        
+        // Find the container that has both the pause button and status
+        const pauseBtn = document.getElementById('pause-' + messageId);
+        const statusSpan = document.getElementById('status-' + messageId);
+        
+        if (!pauseBtn || !statusSpan) {
+            console.error('Could not find audio control elements for', messageId);
+            return;
+        }
+        
+        const audioControls = pauseBtn.parentElement;
+        const playBtn = audioControls.querySelector('button:first-child');
+        
+        // Update UI
+        if (playBtn) {
+            playBtn.style.display = 'none';
+        }
+        if (pauseBtn) {
+            pauseBtn.style.display = 'inline-block';
+        }
+        if (statusSpan) {
+            statusSpan.textContent = '🎵 Playing...';
+        }
+        
+        utterance.onend = () => {
+            isAudioPlaying = false;
+            if (playBtn) playBtn.style.display = 'inline-block';
+            if (pauseBtn) pauseBtn.style.display = 'none';
+            if (statusSpan) statusSpan.textContent = '';
+        };
+        
+        utterance.onerror = (err) => {
+            console.error('Speech error:', err.error);
+            if (statusSpan) statusSpan.textContent = '❌ Error';
+        };
+        
+        window.speechSynthesis.speak(utterance);
+    } catch (error) {
+        console.error('Error in playAudio:', error);
+        showErrorMessage('Error: Could not play audio');
+    }
+}
+
+function pauseAudio() {
+    try {
+        if (isAudioPlaying) {
+            window.speechSynthesis.pause();
+            isAudioPlaying = false;
+            
+            // Update all visible pause buttons to show resume
+            const pauseBtns = document.querySelectorAll('[id^="pause-"]');
+            pauseBtns.forEach(btn => {
+                if (btn.style.display !== 'none') {
+                    btn.textContent = '▶️ Resume';
+                    btn.onclick = function() { resumeAudio(); };
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error in pauseAudio:', error);
+    }
+}
+
+function resumeAudio() {
+    try {
+        if (currentUtterance && !isAudioPlaying) {
+            window.speechSynthesis.resume();
+            isAudioPlaying = true;
+            
+            // Update buttons back to pause
+            const pauseBtns = document.querySelectorAll('[id^="pause-"]');
+            pauseBtns.forEach(btn => {
+                if (btn.style.display !== 'none') {
+                    btn.textContent = '⏸️ Pause';
+                    btn.onclick = function() { pauseAudio(); };
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error in resumeAudio:', error);
+    }
+}
+
+function stopAudio() {
+    try {
+        window.speechSynthesis.cancel();
+        isAudioPlaying = false;
+        currentUtterance = null;
+        
+        // Reset all audio controls
+        const audioControls = document.querySelectorAll('.audio-controls');
+        
+        audioControls.forEach(controls => {
+            const playBtn = controls.querySelector('button:nth-child(1)');
+            const pauseBtn = controls.querySelector('button:nth-child(2)');
+            const statusSpan = controls.querySelector('.audio-status');
+            
+            if (playBtn) playBtn.style.display = 'inline-block';
+            if (pauseBtn) {
+                pauseBtn.style.display = 'none';
+                pauseBtn.textContent = '⏸️ Pause';
+                pauseBtn.onclick = function() { pauseAudio(); };
+            }
+            if (statusSpan) statusSpan.textContent = '';
+        });
+    } catch (error) {
+        console.error('Error in stopAudio:', error);
+    }
+}
+
 function speakMessage(message) {
-    const utterance = new SpeechSynthesisUtterance(message);
-    utterance.lang = languageSelect.value + '-IN';
-    utterance.rate = 0.9;
-    
-    window.speechSynthesis.speak(utterance);
+    // If auto-play is enabled, play the message
+    playAudio('auto-' + Date.now(), message);
 }
 
 function escapeHtml(text) {
